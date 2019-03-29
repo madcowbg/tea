@@ -1,10 +1,12 @@
-import expressions.Const;
-import expressions.Expr;
-import expressions.Op;
-import expressions.Term;
+package snippets;
+
+import expressions.*;
+
+import java.util.function.Function;
 
 import static expressions.Const.C;
 import static expressions.Expr.E;
+
 
 
 public class Main {
@@ -36,26 +38,54 @@ public class Main {
 //        return (term) -> mapper.get(term.getClass()).apply(term);
 //    }
 
-    static double calc(Term t) {
+    public static double eval(Function<Const, Double> f, Term t) {
         if (t instanceof Expr) {
             Expr e = (Expr) t;
-            return e.op.apply(calc(e.a), calc(e.b));
+            return e.op.apply(eval(f, e.a), eval(f, e.b));
         } else if (t instanceof Const) {
-            return ((Const)t).val;
+            return f.apply((Const)t);
         } else {
             throw new UnsupportedOperationException(t.getClass().getName());
         }
     }
 
+    static double mean(Term t) {
+        if (t instanceof Expr) {
+            Expr e = (Expr) t;
+            return e.op.apply(mean(e.a), mean(e.b));
+        } else if (t instanceof Const) {
+            return ((Const)t).val;
+        } else if (t instanceof Gaussian) {
+            return ((Gaussian)t).mu;
+        } else {
+            throw new UnsupportedOperationException(t.getClass().getName());
+        }
+    }
 
-
+//    static double variance(Term t) {
+//        if (t instanceof Expr) {
+//            Expr e = (Expr) t;
+//            return e.op.apply(mean(e.a), mean(e.b));
+//        } else if (t instanceof Const) {
+//            return ((Const)t).val;
+//        } else if (t instanceof Gaussian ) {
+//            return ((Gaussian)t).mu;
+//        } else {
+//            throw new UnsupportedOperationException(t.getClass().getName());
+//        }
+//    }
 
     public static void main(String[] args) {
         Term t = E(C(6.0), Op.minus, E(E(C(5.0), Op.plus, C(1.0)), Op.times, C(7.0)));
-
         System.out.println(t.print());
-        System.out.println(calc(t));
+        System.out.println(mean(t));
+        System.out.println(eval((c) -> c.val, t));
 
+        t = E(C(6.0), Op.minus, E(E(C(5.0), Op.plus, C(1.0)), Op.times, E(Gaussian.W(-4.0, 1.0), Op.plus, C(7.0))));
+        System.out.println(t.print());
+        System.out.println(mean(t));
+        // System.out.println(eval((c) -> c.val, t));
     	// write your code here
     }
+
 }
