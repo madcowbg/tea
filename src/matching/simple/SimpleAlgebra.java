@@ -1,4 +1,4 @@
-package snippets;
+package matching.simple;
 
 import expressions.Op;
 import matching.Cons;
@@ -8,19 +8,19 @@ import matching.Skeleton;
 
 import java.util.Objects;
 
-class SimpleAlgebra {
+public class SimpleAlgebra {
     static final double TOL = 1e-12;
 
-    static class Number implements Expression.Atom, Expression.Constant, Pattern, Skeleton {
+    public static class Number implements Expression, Expression.Atom, Expression.Constant, Pattern, Skeleton, Skeleton.Atom {
         private final double value;
 
-        Number(double value) {
+        public Number(double value) {
             this.value = value;
         }
 
         @Override
-        public boolean isAtomEqual(Atom other) {
-            return this.isExpressionEqual(other);
+        public boolean isAtomEqual(Expression.Atom other) {
+            return other == this || (other instanceof Number && Math.abs(this.value - ((Number) other).value) < TOL);
         }
 
         @Override
@@ -42,9 +42,14 @@ class SimpleAlgebra {
         public String toString() {
             return String.valueOf(value);
         }
+
+        @Override
+        public Expression toAtom() {
+            return this;
+        }
     }
 
-    static class TripletExpression extends Cons<Expression, Expression> implements Expression.Composite {
+    public static class TripletExpression extends Cons<Expression, Expression> implements Expression.Composite {
         public TripletExpression(Op operator, Expression a, Expression b) {
             this(new OperatorExpression(operator), new ParametersExpression(a, b));
         }
@@ -83,7 +88,7 @@ class SimpleAlgebra {
 
         @Override
         public boolean isAtomEqual(Atom exp) {
-            return this == exp || this.isExpressionEqual(exp);
+            return this == exp || (exp instanceof OperatorExpression && Objects.equals(((OperatorExpression) exp).operator, this.operator));
         }
 
         @Override

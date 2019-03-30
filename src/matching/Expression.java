@@ -1,15 +1,15 @@
 package matching;
 
 public interface Expression {
-    interface Atom extends Expression {
+    interface Atom {
         boolean isAtomEqual(Atom exp);
     }
 
-    interface Constant extends Atom {
+    interface Constant extends Atom, Expression {
 
     }
 
-    interface Variable extends Atom {
+    interface Variable extends Atom, Expression {
 
     }
 

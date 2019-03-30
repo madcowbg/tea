@@ -1,10 +1,10 @@
-package snippets;
+package matching.simple;
 
 import matching.MatchedVariable;
 
 import java.util.Objects;
 
-class SimpleMatchedVariable implements MatchedVariable {
+public class SimpleMatchedVariable implements MatchedVariable {
     private final String name;
     public SimpleMatchedVariable(String name) {
         this.name = name;

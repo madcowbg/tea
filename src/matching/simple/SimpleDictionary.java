@@ -1,4 +1,4 @@
-package snippets;
+package matching.simple;
 
 import functional.Maybe;
 import matching.Dictionary;
@@ -14,22 +14,23 @@ import java.util.stream.Collectors;
 import static functional.Maybe.fail;
 import static functional.Maybe.ok;
 
-class SimpleDictionary implements Dictionary {
-    static final Dictionary EMPTY = new SimpleDictionary(Collections.emptyMap());
+public class SimpleDictionary implements Dictionary {
+    public static final Dictionary EMPTY = new SimpleDictionary(Collections.emptyMap());
+
     private final Map<MatchedVariable, Expression> mapping;
 
-    public SimpleDictionary(Map<MatchedVariable, Expression> mapping) {
+    private SimpleDictionary(Map<MatchedVariable, Expression> mapping) {
         this.mapping = mapping;
     }
 
     @Override
     public Maybe<Dictionary> extend(Pattern.ArbitraryConstant pat, Expression.Constant exp) {
-        throw new UnsupportedOperationException();
+        return checkExtending(pat.variable(), exp);
     }
 
     @Override
     public Maybe<Dictionary> extend(Pattern.ArbitraryVariable pat, Expression.Variable exp) {
-        throw new UnsupportedOperationException();
+        return checkExtending(pat.variable(), exp);
     }
 
     @Override

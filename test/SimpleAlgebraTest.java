@@ -17,13 +17,9 @@ public class SimpleAlgebraTest {
         Algebra.Variable v = new SimpleVariable("x");
         Algebra.Variable y = new SimpleVariable("y");
         Algebra.Expression e = a.makeSum(a.makeProduct(v, a.makeProduct(y, v)), a.makeSum(y, v));
-        System.out.println(e.toString());
         Assert.assertEquals(e.toString().replace(" ", ""), "((x*(y*x))+(y+x))");
 
         Function<Algebra.Expression, Maybe<Algebra.Expression>> dd_v = (e2) -> deriv(a).apply(e2, v);
-        System.out.println(deriv(a).apply(e, v).toString());
-        System.out.println(Maybe.repeat(dd_v, 2).apply(e).toString());
-        System.out.println(Maybe.repeat(dd_v, 3).apply(e).toString());
         Assert.assertEquals(
                 deriv(a).apply(e, v).toString().replace(" ", ""),
                 "ok[(((y*x)+(x*y))+1.0)]");

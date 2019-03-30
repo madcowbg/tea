@@ -1,7 +1,6 @@
 package matching;
 
 import functional.Maybe;
-import snippets.MainSimplifier;
 
 import static functional.Maybe.fail;
 import static functional.Maybe.ok;
@@ -42,7 +41,7 @@ public interface Operations {
 
     static Expression instantiate(Dictionary dict, Skeleton s) {
         if (s.isAtom()) {
-            return (Expression.Atom) s;
+            return ((Skeleton.Atom)s).toAtom();
         } else if (s.isSkeletonEvaluation()) {
             return dict.lookup(((Skeleton.SkeletonEvaluation) s).variable());
         } else {

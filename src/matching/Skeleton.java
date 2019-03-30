@@ -7,11 +7,17 @@ public interface Skeleton {
 
     }
 
+    interface Atom {
+        Expression toAtom();
+    }
+
     interface SkeletonEvaluation extends Skeleton {
         MatchedVariable variable();
     }
 
-    boolean isAtom();
+    default boolean isAtom() {
+        return this instanceof Atom;
+    }
 
     default boolean isSkeletonEvaluation() {
         return this instanceof SkeletonEvaluation;
