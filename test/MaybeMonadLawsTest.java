@@ -11,8 +11,8 @@ public class MaybeMonadLawsTest {
     private Function<Integer, Maybe<Integer>> ok_ = Maybe::ok;
     private Function<Integer, Maybe<Integer>> fail_ = val -> fail("why not...");
 
-    private Function<Integer, Maybe<Integer>> f = val -> ok(val +1);
-    private Function<Integer, Maybe<Integer>> g = val -> ok(val +3);
+    private Function<Integer, Maybe<Integer>> f = val -> ok(val + 1);
+    private Function<Integer, Maybe<Integer>> g = val -> ok(val + 3);
 
     @Test(description = "unit(a) flatMap f === f(a)")
     public void LeftIdentity() {
@@ -52,5 +52,23 @@ public class MaybeMonadLawsTest {
         Assert.assertEquals(lifted.apply(ok(2.0), ok(3)), ok(5.0f));
         Assert.assertEquals(lifted.apply(ok(2.0), fail("")), fail(""));
         Assert.assertEquals(lifted.apply(fail(""), ok(3)), fail(""));
+    }
+
+    @Test
+    public void OrElseReturnsOrConsumesWhenNeeded() {
+        var res = ok(5.0);
+        Assert.assertEquals(res.orElse(7.0), 5.0);
+        Assert.assertEquals(res.orElse((f) -> {
+            throw new RuntimeException("Should not be called!");
+        }), 5.0);
+
+        var failed = fail("yeah...");
+        Assert.assertEquals(failed.orElse(8.0), 8.0);
+        Assert.assertEquals(failed.orElse((f) -> {
+            if (!f.equals(failed)) {
+                throw new RuntimeException("are not equal, should be!");
+            }
+            return 9.0;
+        }), 9.0);
     }
 }

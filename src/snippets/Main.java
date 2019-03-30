@@ -8,7 +8,6 @@ import static expressions.Const.C;
 import static expressions.Expr.E;
 
 
-
 public class Main {
 //    interface EvalFun<T> extends Function<Term, T> {}
 //
@@ -48,6 +47,15 @@ public class Main {
             throw new UnsupportedOperationException(t.getClass().getName());
         }
     }
+
+//
+//    static <T> Function<Term, Maybe<T>> genericApply(Map<Class, Function<Object, T>> map) {
+//        return t ->
+//                Optional.ofNullable(map.get(t.getClass()))
+//                        .map(f -> f.apply(t))
+//                        .map(Maybe::of)
+//                        .orElse(Maybe.fail("unsupported class " + t.getClass()));
+//    }
 
     static double mean(Term t) {
         if (t instanceof Expr) {
