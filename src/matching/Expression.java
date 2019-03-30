@@ -27,7 +27,7 @@ public interface Expression {
 
     boolean isExpressionEqual(Expression expression);
 
-    Composite consWith(Expression instantiate);
+    Composite consWith(Expression other);
 
     default boolean isAtom() {
         return this instanceof Atom;
