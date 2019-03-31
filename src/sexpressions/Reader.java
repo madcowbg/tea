@@ -1,59 +1,36 @@
-package snippets;
+package sexpressions;
 
 import functional.Maybe;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
-import java.util.stream.Collectors;
+import java.util.function.Function;
 
 import static functional.Maybe.fail;
 import static functional.Maybe.ok;
 import static java.lang.Character.isWhitespace;
 
-public class SExpressionReader {
+public class Reader<T> {
 
-    interface Expr {}
+    private final Function<String, T> f;
+    private final Expressions<T> tree;
 
-    private class Atom implements Expr {
-        public final String data;
+    public final static Reader<String> STRING = new Reader<>(Function.identity(), new DefaultExpressions<>());
 
-        public Atom(String data) {
-            this.data = data;
-        }
-
-        @Override
-        public String toString() {
-            return data;
-        }
+    public Reader(Function<String, T> f, Expressions<T> tree) {
+        this.f = f;
+        this.tree = tree;
     }
 
-    private class CompExp implements Expr {
-        public final List<Expr> children;
-
-        public CompExp(List<Expr> children) {
-            this.children = children;
-        }
-
-        @Override
-        public String toString() {
-            return "(" + children.stream().map(Object::toString).collect(Collectors.joining(" ")) + ")";
-        }
-    }
-
-    private final char[] s;
-
-    public SExpressionReader(char[] s) {
-        this.s = s;
-    }
-
-    public Maybe<Expr> read() {
-        Stack<List<Expr>> partial = new Stack<>();
+    public Maybe<Expressions.Expr> readSExp(String str) {
+        char[] s = str.toCharArray();
+        Stack<List<Expressions.Expr>> partial = new Stack<>();
         partial.push(new LinkedList<>());
 
         int i = 0;
         while (true) {
-            i = skipWS(i);
+            i = skipWS(s, i);
             if (i >= s.length) {
                 break;
             } else if (s[i] == '(') {
@@ -70,21 +47,21 @@ public class SExpressionReader {
                 }
 
                 i++;
-                List<Expr> children = partial.pop();
-                partial.peek().add(new CompExp(children));
+                List<Expressions.Expr> children = partial.pop();
+                partial.peek().add(tree.cons(children));
             } else {
                 int start = i;
-                int end = atomEnd(start);
+                int end = atomEnd(s, start);
                 if (end > start) {
-                    partial.peek().add(new Atom(String.copyValueOf(s, start, end - start)));
+                    partial.peek().add(tree.atom(f.apply(String.copyValueOf(s, start, end - start))));
                 }
                 i = end;
             }
         }
 
-        i = skipWS(i);
+        i = skipWS(s, i);
         if (i < s.length) {
-            return fail("non-read characters after index " + i + ": " + String.copyValueOf(s, i, s.length - i));
+            return fail("non-readSExp characters after index " + i + ": " + String.copyValueOf(s, i, s.length - i));
         } else if (partial.size() > 1){
             return fail("non-terminated expressions of stack size " + (partial.size() - 1));
         } else {
@@ -92,7 +69,7 @@ public class SExpressionReader {
         }
     }
 
-    private int atomEnd(int start) {
+    private int atomEnd(char[] s, int start) {
         int end = start;
         while (end < s.length && !isWhitespace(s[end]) && s[end] != ')') {
             end++;
@@ -100,9 +77,8 @@ public class SExpressionReader {
         return end;
     }
 
-    private int skipWS(int idx) {
+    private int skipWS(char[] s, int idx) {
         while(idx < s.length && isWhitespace(s[idx])) {idx++;}
         return idx;
     }
-
 }

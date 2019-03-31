@@ -1,7 +1,7 @@
 import functional.Maybe;
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import snippets.SExpressionReader;
+import sexpressions.Reader;
 
 @Test
 public class SExpressionsTest {
@@ -20,12 +20,12 @@ public class SExpressionsTest {
     }
 
     private void assertFail(String str) {
-        var e = new SExpressionReader(str.toCharArray()).read();
+        var e = Reader.STRING.readSExp(str);
         Assert.assertTrue(e instanceof Maybe.Fail);
     }
 
     private void assertCorrect(String str) {
-        Assert.assertEquals(new SExpressionReader(str.toCharArray()).read().orElseThrow(RuntimeException::new) + "", cleanSexprString(str));
+        Assert.assertEquals(Reader.STRING.readSExp(str).orElseThrow(RuntimeException::new) + "", cleanSexprString(str));
     }
 
     private String cleanSexprString(String str) {

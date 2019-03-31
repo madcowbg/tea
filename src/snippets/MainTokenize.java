@@ -1,5 +1,7 @@
 package snippets;
 
+import sexpressions.Reader;
+
 public class MainTokenize {
 
     public static void main(String[] argc) {
@@ -11,6 +13,6 @@ public class MainTokenize {
     }
 
     private static void runTest(String str) {
-        System.out.println(str + " -> " + new SExpressionReader(str.toCharArray()).read());
+        System.out.println(str + " -> " + Reader.STRING.readSExp(str));
     }
 }
