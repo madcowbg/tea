@@ -7,4 +7,5 @@ public interface Expressions<T> {
 
     Expr cons(List<Expr> children);
     Expr atom(T apply);
+    T data(String data);
 }

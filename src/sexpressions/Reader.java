@@ -13,13 +13,11 @@ import static java.lang.Character.isWhitespace;
 
 public class Reader<T> {
 
-    private final Function<String, T> f;
     private final Expressions<T> tree;
 
-    public final static Reader<String> STRING = new Reader<>(Function.identity(), new DefaultExpressions<>());
+    public final static Reader<String> STRING = new Reader<>(new DefaultExpressions());
 
-    public Reader(Function<String, T> f, Expressions<T> tree) {
-        this.f = f;
+    public Reader(Expressions<T> tree) {
         this.tree = tree;
     }
 
@@ -53,7 +51,7 @@ public class Reader<T> {
                 int start = i;
                 int end = atomEnd(s, start);
                 if (end > start) {
-                    partial.peek().add(tree.atom(f.apply(String.copyValueOf(s, start, end - start))));
+                    partial.peek().add(tree.atom(tree.data(String.copyValueOf(s, start, end - start))));
                 }
                 i = end;
             }

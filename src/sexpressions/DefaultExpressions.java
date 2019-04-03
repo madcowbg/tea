@@ -3,21 +3,26 @@ package sexpressions;
 import java.util.List;
 import java.util.stream.Collectors;
 
-class DefaultExpressions<T> implements Expressions<T> {
+class DefaultExpressions implements Expressions<String> {
     @Override
     public Expr cons(List<Expr> children) {
         return new CompExp(children);
     }
 
     @Override
-    public Expr atom(T data) {
+    public Expr atom(String data) {
         return new Atom(data);
     }
 
-    private class Atom implements Expr {
-        final T data;
+    @Override
+    public String data(String data) {
+        return data;
+    }
 
-        Atom(T data) {
+    private class Atom implements Expr {
+        final String data;
+
+        Atom(String data) {
             this.data = data;
         }
 
