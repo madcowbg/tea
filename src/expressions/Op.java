@@ -8,6 +8,11 @@ public enum Op implements Printable, Operation {
         }
 
         @Override
+        public String toString() {
+            return print();
+        }
+
+        @Override
         public double apply(double a, double b) {
             return a + b;
         }
@@ -17,6 +22,12 @@ public enum Op implements Printable, Operation {
         public String print() {
             return "-";
         }
+
+        @Override
+        public String toString() {
+            return print();
+        }
+
         @Override
         public double apply(double a, double b) {
             return a - b;
@@ -27,6 +38,12 @@ public enum Op implements Printable, Operation {
         public String print() {
             return "*";
         }
+
+        @Override
+        public String toString() {
+            return print();
+        }
+
         @Override
         public double apply(double a, double b) {
             return a * b;
@@ -37,6 +54,12 @@ public enum Op implements Printable, Operation {
         public String print() {
             return "/";
         }
+
+        @Override
+        public String toString() {
+            return print();
+        }
+
         @Override
         public double apply(double a, double b) {
             return a / b;

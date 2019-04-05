@@ -2,12 +2,7 @@ package matching;
 
 import functional.Maybe;
 
-public interface Dictionary {
-    Maybe<Dictionary> extend(Pattern.ArbitraryConstant pat, Expression.Constant exp);
-
-    Maybe<Dictionary> extend(Pattern.ArbitraryVariable pat, Expression.Variable exp);
-
-    Maybe<Dictionary> extend(Pattern.ArbitraryExpression pat, Expression exp);
-
+public interface Dictionary<Expression> {
+    Maybe<Dictionary<Expression>> extend(ExpressionSystem<?, Expression, ? extends Expression> e, MatchedVariable var, Expression exp);
     Expression lookup(MatchedVariable var);
 }
