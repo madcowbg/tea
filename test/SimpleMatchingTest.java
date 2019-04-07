@@ -1,7 +1,6 @@
 import expressions.Op;
 import functional.Maybe;
 import matching.Dictionary;
-import matching.MatchedVariable;
 import matching.Operations;
 import matching.simple.*;
 import org.testng.Assert;

@@ -5,12 +5,15 @@ import functional.Maybe;
 import matching.*;
 import matching.simple.*;
 
+import java.util.Collection;
 import java.util.List;
 
 import static matching.simple.SimpleAlgebra.Distribution.Normal;
 import static snippets.Probabilistic.PROBABILISTIC_NORMAL_SIMPLIFIER_RULES;
 
 public class MainSimplifier {
+    private static final SimpleAlgebra a = new SimpleAlgebra();
+    private static final Operations<Object, Object, Object, Object, Object, Object, Object> o = new Operations<>(a, a, a);
 
 
     public static void main(String[] args) {
@@ -19,8 +22,6 @@ public class MainSimplifier {
     }
 
     static void tryComplexProb() {
-        var a = new SimpleAlgebra();
-        var o = new Operations<>(a, a, a);
 
         var x_1 = new SimpleAlgebra.Symbol("x_1");
         var exp = List.of(Op.plus, 3.0, List.of(Op.mul, 3.0, List.of(Normal, x_1, 0.0, 1.0)));
@@ -41,18 +42,36 @@ public class MainSimplifier {
 
         System.out.println(a.isExpressionEqual(simplified, simplified2));
 
-        var ultraSimplified = o.repeatedlyApplyRules(PROBABILISTIC_NORMAL_SIMPLIFIER_RULES, SimpleDictionary::EMPTY, 10000).apply(exp);
+        Collection<Operations.Rule<Object, Object>> rules = List.of(
+                new Operations.Rule<>(
+                        List.of(Op.mul, List.of("?c", "m"), List.of(Normal, List.of("?", "v"), List.of("?", "mu"), List.of("?", "sigma"))),
+                        List.of(Normal, List.of(":", "v"), List.of(Op.mul, List.of(":", "m"), List.of(":", "mu")), List.of(Op.mul, List.of(":", "m"), List.of(":", "sigma")))),
+                new Operations.Rule<>(
+                        List.of(Op.plus, List.of("?c", "a"), List.of(Normal, List.of("?", "v"), List.of("?", "mu"), List.of("?", "sigma"))),
+                        List.of(Normal, List.of(":", "v"), List.of(Op.plus, List.of(":", "a"), List.of(":", "mu")), List.of(":", "sigma"))),
+                new Operations.Rule<>(
+                        List.of(Op.mul, List.of("?d", "dist"), List.of("?c", "m")),
+                        List.of(Op.mul, List.of(":", "m"), List.of(":", "dist"))),
+                new Operations.Rule<>(
+                        List.of(Op.plus, List.of("?d", "dist"), List.of("?c", "a")),
+                        List.of(Op.plus, List.of(":", "a"), List.of(":", "dist"))),
+                new Operations.Rule<>(List.of(Op.mul, List.of("?", "x"), 1.0d), List.of(":", "x")),
+                new Operations.Rule<>(List.of(Op.mul, 1.0d, List.of("?", "x")), List.of(":", "x")),
+                new Operations.Rule<>(List.of(Op.mul, List.of("?", "x"), 0.0d), 0.0d),
+                new Operations.Rule<>(List.of(Op.mul, 0.0d, List.of("?", "x")), 0.0d),
+                new Operations.Rule<>(List.of(Op.plus, List.of("?", "x"), 0.0d), List.of(":", "x")),
+                new Operations.Rule<>(List.of(Op.plus, 0.0d, List.of("?", "x")), List.of(":", "x")));
+        var ultraSimplified = o.repeatedlyApplyRules(rules, SimpleDictionary::EMPTY, 10000).apply(exp);
         System.out.println(ultraSimplified);
 
         var other = List.of(Op.plus, List.of(Op.mul, List.of(Normal, x_1, 0.0, 1.0), 3.0), 3.0);
-        System.out.println(o.repeatedlyApplyRules(PROBABILISTIC_NORMAL_SIMPLIFIER_RULES, SimpleDictionary::EMPTY, 10000).apply(other));
+        System.out.println(o.repeatedlyApplyRules(rules, SimpleDictionary::EMPTY, 10000).apply(other));
 
+        var zeroExp = List.of(Op.mul, List.of(Op.mul, List.of(Normal, x_1, 0, 1), 3), 0);
+        System.out.println(o.repeatedlyApplyRules(rules, SimpleDictionary::EMPTY, 10000).apply(zeroExp));
     }
 
     static void trySimpleProb() {
-        var a = new SimpleAlgebra();
-        var o = new Operations<>(a, a, a);
-
         var x_1 = new SimpleAlgebra.Symbol("x_1");
         var exp = List.of(Op.mul, 3.0, List.of(Normal, x_1, 0.0, 1.0));
         System.out.println(exp);
@@ -70,7 +89,6 @@ public class MainSimplifier {
     }
 
     private static void runAlgSim() {
-        var a = new SimpleAlgebra();
         var exp = List.of(Op.plus, 5.0, 7.0);
 
         var patArbExp = List.of("?", "x");
@@ -81,7 +99,6 @@ public class MainSimplifier {
 
         var emptyDict = SimpleDictionary.EMPTY();
 
-        var o = new Operations<>(a, a, a);
         var dict = o.match(pat, exp, emptyDict);
         System.out.println(dict);
 

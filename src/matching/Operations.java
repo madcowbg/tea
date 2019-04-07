@@ -44,7 +44,7 @@ public class Operations<Atom, Expression, CompositeExpression extends Expression
                         ? ok(dict)
                         : fail("pattern and expression atoms are different: " + pat.toString() + " != " + exp.toString());
             } else {
-                return fail("can't match pattern atom with expression non-atom: " + pat.toString() + " != " + exp.toString());
+                return fail("can't match pattern atom with expression non-atom: " + pat + " != " + exp.toString());
             }
         } else if (p.isArbitraryConstant(pat)) {
             return e.isConstant(exp)
@@ -56,6 +56,10 @@ public class Operations<Atom, Expression, CompositeExpression extends Expression
                     : fail("can't match variable pattern witn non-variable expression: " + pat.toString() + " != " + exp.toString());
         } else if (p.isArbitraryExpression(pat)) {
             return dict.extend(e, p.variableFrom(pat), exp);
+        } else if (p.isArbitraryDistribution(pat)) {
+            return e.isDistribution(exp)
+                    ? dict.extend(e, p.variableFrom(pat), exp)
+                    : fail("can't match distribution pattern witn non-distribution expression: " + pat.toString() + " != " + exp.toString());
         } else if (e.isAtom(exp)) {
             return fail("can't match atom expression with pattern: " + pat + " != " + exp);
         } else {

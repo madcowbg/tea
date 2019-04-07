@@ -14,4 +14,6 @@ public interface ExpressionSystem<Atom, Expression, CompositeExpression extends 
     boolean isCompositeExpression(Expression a);
 
     boolean isExpressionEqual(Expression a, Expression b);
+
+    boolean isDistribution(Expression exp);
 }

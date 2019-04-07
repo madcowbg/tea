@@ -6,7 +6,6 @@ import matching.MatchedVariable;
 import matching.PatternSystem;
 import matching.SkeletonSystem;
 
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -59,8 +58,8 @@ public class SimpleAlgebra implements ExpressionSystem<Object, Object, Object>, 
     public boolean isAtomEqual(Object a, Object b) {
         if (a == null && b == null) {
             return true;
-        } else if (a instanceof Double && b instanceof Double) {
-            return Math.abs(((Double) a) - ((Double) b)) < TOL;
+        } else if (a instanceof Number && b instanceof Number) {
+            return Math.abs(((Number) a).doubleValue() - ((Number) b).doubleValue()) < TOL;
         } else if (a instanceof Op && b instanceof Op) {
             return Objects.equals(a, b);
         } else if (a instanceof Variable && b instanceof Variable ) {
@@ -94,7 +93,7 @@ public class SimpleAlgebra implements ExpressionSystem<Object, Object, Object>, 
 
     @Override
     public boolean isConstant(Object a) {
-        return a instanceof Double;
+        return a instanceof Number;
     }
 
     @Override
@@ -116,6 +115,11 @@ public class SimpleAlgebra implements ExpressionSystem<Object, Object, Object>, 
         } else {
             return false;
         }
+    }
+
+    @Override
+    public boolean isDistribution(Object exp) {
+        return exp instanceof List && ((List) exp).get(0) instanceof Distribution;
     }
 
 
@@ -159,6 +163,11 @@ public class SimpleAlgebra implements ExpressionSystem<Object, Object, Object>, 
     @Override
     public boolean isArbitraryExpression(Object p) {
         return p instanceof List && isArbitrary("?", (List)p);
+    }
+
+    @Override
+    public boolean isArbitraryDistribution(Object p) {
+        return p instanceof List && isArbitrary("?d", (List) p);
     }
 
     @Override
