@@ -25,7 +25,7 @@ public class Main {
 //                    return eval(mapper).apply(e.a) + eval(mapper).apply(e.b);
 //                case minus:
 //                    return eval(mapper).apply(e.a) + eval(mapper).apply(e.b);
-//                case times:
+//                case mul:
 //                    return eval(mapper).apply(e.a) * eval(mapper).apply(e.b);
 //                default:
 //                    throw new UnsupportedOperationException();
@@ -84,12 +84,12 @@ public class Main {
 //    }
 
     public static void main(String[] args) {
-        Term t = E(C(6.0), Op.minus, E(E(C(5.0), Op.plus, C(1.0)), Op.times, C(7.0)));
+        Term t = E(C(6.0), Op.minus, E(E(C(5.0), Op.plus, C(1.0)), Op.mul, C(7.0)));
         System.out.println(t.print());
         System.out.println(mean(t));
         System.out.println(eval((c) -> c.val, t));
 
-        t = E(C(6.0), Op.minus, E(E(C(5.0), Op.plus, C(1.0)), Op.times, E(Gaussian.W(-4.0, 1.0), Op.plus, C(7.0))));
+        t = E(C(6.0), Op.minus, E(E(C(5.0), Op.plus, C(1.0)), Op.mul, E(Gaussian.W(-4.0, 1.0), Op.plus, C(7.0))));
         System.out.println(t.print());
         System.out.println(mean(t));
         // System.out.println(eval((c) -> c.val, t));

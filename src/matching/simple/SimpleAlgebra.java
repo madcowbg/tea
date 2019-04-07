@@ -6,13 +6,36 @@ import matching.MatchedVariable;
 import matching.PatternSystem;
 import matching.SkeletonSystem;
 
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
-/**
- * Atoms are either Double or Op
- */
 public class SimpleAlgebra implements ExpressionSystem<Object, Object, Object>, PatternSystem<Object, Object, Object>, SkeletonSystem<Object, Object, Object, Object> {
+
+    public enum Distribution {
+        Normal {
+            @Override
+            public String toString() {
+                return "N";
+            }
+        }
+    }
+
+    public static class Symbol {
+        private final String representation;
+
+        public Symbol(String representation) {
+            assert representation != null;
+            this.representation = representation;
+        }
+
+        @Override
+        public String toString() {
+            return representation;
+        }
+    }
+
     static final double TOL = 1e-12;
 
     @Override
@@ -24,7 +47,7 @@ public class SimpleAlgebra implements ExpressionSystem<Object, Object, Object>, 
     @Override
     public Object cdr(Object exp) {
         assert exp instanceof List;
-        return ((List) exp).size() == 2 ? ((List) exp).get(1) : ((List) exp).subList(1, ((List) exp).size());
+        return ((List) exp).size() <= 1 ? null : ((List) exp).subList(1, ((List) exp).size());
     }
 
     @Override
@@ -34,12 +57,18 @@ public class SimpleAlgebra implements ExpressionSystem<Object, Object, Object>, 
 
     @Override
     public boolean isAtomEqual(Object a, Object b) {
-        if (a instanceof Double && b instanceof Double) {
-            return Math.abs(((Double) a).doubleValue() - ((Double) b).doubleValue()) < TOL;
+        if (a == null && b == null) {
+            return true;
+        } else if (a instanceof Double && b instanceof Double) {
+            return Math.abs(((Double) a) - ((Double) b)) < TOL;
         } else if (a instanceof Op && b instanceof Op) {
             return Objects.equals(a, b);
         } else if (a instanceof Variable && b instanceof Variable ) {
             return Objects.equals(a, b);
+        } else if (a instanceof Distribution && b instanceof Distribution) {
+            return Objects.equals(a, b);
+        } else if (a instanceof Symbol && b instanceof Symbol) {
+            return ((Symbol) a).representation.equals(((Symbol) b).representation);
         } else {
             return false;
         }
@@ -47,7 +76,20 @@ public class SimpleAlgebra implements ExpressionSystem<Object, Object, Object>, 
 
     @Override
     public Object cons(Object a, Object b) {
-        return List.of(a, b);
+        if (b == null) {
+            return List.of(a);
+        } else if (b instanceof List) {
+            var op = ((List) b).get(0);
+            if (op instanceof Distribution || op instanceof Op) {
+                return List.of(a, b);
+            } else {
+                var res = new LinkedList<Object>((List)b);
+                res.add(0, a);
+                return res;
+            }
+        } else {
+            return List.of(a, b);
+        }
     }
 
     @Override
@@ -62,7 +104,7 @@ public class SimpleAlgebra implements ExpressionSystem<Object, Object, Object>, 
 
     @Override
     public boolean isCompositeExpression(Object a) {
-        return a instanceof List && ((List) a).size() > 1;
+        return a instanceof List;
     }
 
     @Override

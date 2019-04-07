@@ -83,7 +83,7 @@ class SimpleProduct implements Algebra.Product {
 
     @Override
     public String toString() {
-        return "(" + a.toString() + Op.times.print() + b.toString() + ")";
+        return "(" + a.toString() + Op.mul.print() + b.toString() + ")";
     }
 }
 

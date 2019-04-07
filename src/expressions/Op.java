@@ -33,7 +33,7 @@ public enum Op implements Printable, Operation {
             return a - b;
         }
     },
-    times {
+    mul {
         @Override
         public String print() {
             return "*";
