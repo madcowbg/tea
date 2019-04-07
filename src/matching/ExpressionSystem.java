@@ -11,9 +11,11 @@ public interface ExpressionSystem<Atom, Expression, CompositeExpression extends 
     boolean isAtom(Expression a);
     boolean isConstant(Expression a);
     boolean isVariable(Expression a);
+    boolean isDistribution(Expression exp);
+
     boolean isCompositeExpression(Expression a);
 
     boolean isExpressionEqual(Expression a, Expression b);
 
-    boolean isDistribution(Expression exp);
+    Expression evaluate(Expression skeleton);
 }

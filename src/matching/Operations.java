@@ -54,13 +54,13 @@ public class Operations<Atom, Expression, CompositeExpression extends Expression
             return e.isVariable(exp)
                     ? dict.extend(e, p.variableFrom(pat), exp)
                     : fail("can't match variable pattern witn non-variable expression: " + pat.toString() + " != " + exp.toString());
-        } else if (p.isArbitraryExpression(pat)) {
-            return dict.extend(e, p.variableFrom(pat), exp);
         } else if (p.isArbitraryDistribution(pat)) {
             return e.isDistribution(exp)
                     ? dict.extend(e, p.variableFrom(pat), exp)
                     : fail("can't match distribution pattern witn non-distribution expression: " + pat.toString() + " != " + exp.toString());
-        } else if (e.isAtom(exp)) {
+        } else if (p.isArbitraryExpression(pat)) {
+            return dict.extend(e, p.variableFrom(pat), exp);
+        }  else if (e.isAtom(exp)) {
             return fail("can't match atom expression with pattern: " + pat + " != " + exp);
         } else {
             if (e.isCompositeExpression(exp) && p.isCompositePattern(pat)) {
@@ -78,6 +78,8 @@ public class Operations<Atom, Expression, CompositeExpression extends Expression
             return s.toAtom(skeleton);
         } else if (s.isSkeletonEvaluation(skeleton)) {
             return dict.lookup(s.variableFromSkeletonEvaluation(skeleton));
+        } else if (s.isExpressionEvaluation(skeleton)) {
+            return e.evaluate(instantiate(dict, s.expressionToEval(skeleton)));
         } else {
             assert s.isCompositeExpression(skeleton);
             return e.cons(instantiate(dict, s.car((CompositeSkeleton) skeleton)), instantiate(dict, s.cdr((CompositeSkeleton) skeleton)));

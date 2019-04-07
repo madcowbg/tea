@@ -7,15 +7,26 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static matching.simple.SimpleAlgebra.Distribution.Normal;
-import static snippets.Probabilistic.PROBABILISTIC_NORMAL_SIMPLIFIER_RULES;
+import static snippets.GaussianRules.GAUSSIAN_DISTRIBUTION_INCORPORATE_LINEAR_COMBINATION_RULES;
+import static snippets.ProbabilisticRules.DISTRIBUTION_SIMPLIFICATION_RULES;
+import static snippets.Rules.*;
 
 
 @Test
 public class SimpleMatchingTest {
     private final SimpleAlgebra a = new SimpleAlgebra();
     private final Operations<Object, Object, Object, Object, Object, Object, Object> o = new Operations<>(a, a, a);
+
+
+    private final static List<Operations.Rule<Object, Object>> PROBABILISTIC_NORMAL_SIMPLIFIER_RULES = Stream.of(
+            ALGEBRAIC_SIMPLIFICATION_RULES,
+            DISTRIBUTION_SIMPLIFICATION_RULES,
+            GAUSSIAN_DISTRIBUTION_INCORPORATE_LINEAR_COMBINATION_RULES,
+            ALGEBRAIC_NUMBER_EVALUATION_RULES).flatMap(List::stream).collect(Collectors.toList());
 
     @Test
     void TestMatchInstantiate() {

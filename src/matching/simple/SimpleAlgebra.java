@@ -1,10 +1,7 @@
 package matching.simple;
 
 import expressions.Op;
-import matching.ExpressionSystem;
-import matching.MatchedVariable;
-import matching.PatternSystem;
-import matching.SkeletonSystem;
+import matching.*;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -33,6 +30,7 @@ public class SimpleAlgebra implements ExpressionSystem<Object, Object, Object>, 
         public String toString() {
             return representation;
         }
+
     }
 
     static final double TOL = 1e-12;
@@ -211,6 +209,11 @@ public class SimpleAlgebra implements ExpressionSystem<Object, Object, Object>, 
     }
 
     @Override
+    public boolean isExpressionEvaluation(Object s) {
+        return s instanceof List && ((List) s).size() == 2 && ((List) s).get(0).equals(":eval");
+    }
+
+    @Override
     public MatchedVariable variableFromSkeletonEvaluation(Object s) {
         assert s instanceof List && ((List) s).size() == 2;
         return new PatternVariable((String)((List) s).get(1));
@@ -221,5 +224,29 @@ public class SimpleAlgebra implements ExpressionSystem<Object, Object, Object>, 
     public Object toAtom(Object o) {
         assert isAtom(o);
         return o;
+    }
+
+    @Override
+    public Object expressionToEval(Object o) {
+        assert o instanceof List;
+        return ((List) o).get(1);
+    }
+
+    @Override
+    public Object evaluate(Object o) {
+        if (isAtom(o)) {
+            return o;
+        } else if (isCompositeExpression(o) && (((List) o).size() == 3 || ((List) o).size() == 2)) {
+            var op = evaluate(((List) o).get(0));
+            var a = evaluate(((List) o).get(1));
+            var b = ((List) o).size() == 3 ? evaluate(((List) o).get(2)) : Double.NaN;
+            if (op instanceof Op && a instanceof Number && b instanceof Number) {
+                return ((Op) op).apply(((Number) a).doubleValue(), ((Number) b).doubleValue());
+            } else {
+                return cons(op, cons(a, b));
+            }
+        } else {
+            return o;
+        }
     }
 }

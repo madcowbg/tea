@@ -7,18 +7,55 @@ import matching.simple.*;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static matching.simple.SimpleAlgebra.Distribution.Normal;
-import static snippets.Probabilistic.PROBABILISTIC_NORMAL_SIMPLIFIER_RULES;
+import static snippets.GaussianRules.GAUSSIAN_EXPECTATION_RULES;
+import static snippets.ProbabilisticRules.*;
+import static snippets.Rules.*;
 
 public class MainSimplifier {
     private static final SimpleAlgebra a = new SimpleAlgebra();
     private static final Operations<Object, Object, Object, Object, Object, Object, Object> o = new Operations<>(a, a, a);
 
-
     public static void main(String[] args) {
 //        trySimpleProb();
-        tryComplexProb();
+//        tryComplexProb();
+        tryExpectations();
+    }
+
+    private static void tryExpectations() {
+        var x_1 = new SimpleAlgebra.Symbol("x_1");
+        var exp = List.of(Op.plus, 3.0, List.of(Op.mul, List.of(Normal, x_1, 0.0, 1.0), 4));
+        System.out.println(exp);
+
+        var Exp = new SimpleAlgebra.Symbol("Exp");
+
+        var allExpectationRules = Stream.of(
+                ALGEBRAIC_SIMPLIFICATION_RULES,
+                DISTRIBUTION_SIMPLIFICATION_RULES,
+                EXPECTATION_RULES(Exp),
+                GAUSSIAN_EXPECTATION_RULES(Exp)).flatMap(List::stream).collect(Collectors.toList());
+
+        var expectation = o.repeatedlyApplyRules(allExpectationRules, SimpleDictionary::EMPTY, 10000).apply(List.of(Exp, exp));
+        System.out.println(expectation);
+
+        var Var = new SimpleAlgebra.Symbol("Var");
+
+        var allVarianceRules = Stream.of(
+                ALGEBRAIC_SIMPLIFICATION_RULES,
+                PRODUCT_ALGEBRAIC_SIMPLIFICATION,
+                DISTRIBUTION_SIMPLIFICATION_RULES,
+                EXPECTATION_RULES(Exp),
+                VARIANCE_RULES(Exp, Var),
+                //GAUSSIAN_DISTRIBUTION_INCORPORATE_LINEAR_COMBINATION_RULES,
+                GAUSSIAN_EXPECTATION_RULES(Exp),
+                ALGEBRAIC_NUMBER_EVALUATION_RULES
+                ).flatMap(List::stream).collect(Collectors.toList());
+
+        var variance = o.repeatedlyApplyRules(allVarianceRules, SimpleDictionary::EMPTY, 10000).apply(List.of(Var, exp));
+        System.out.println(variance);
     }
 
     static void tryComplexProb() {

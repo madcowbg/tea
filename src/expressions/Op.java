@@ -49,6 +49,22 @@ public enum Op implements Printable, Operation {
             return a * b;
         }
     },
+    sign{
+        @Override
+        public String print() {
+            return "sgn";
+        }
+
+        @Override
+        public String toString() {
+            return print();
+        }
+
+        @Override
+        public double apply(double a, double b) {
+            return Math.signum(a);
+        }
+    },
     div {
         @Override
         public String print() {
