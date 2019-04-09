@@ -43,7 +43,6 @@ public class ProbabilisticCalculusTest {
                 gaussianRules.GAUSSIAN_EXPECTATION_RULES()).flatMap(List::stream).collect(Collectors.toList());
 
         var expectation = o.repeatedlyApplyRules(allExpectationRules, SimpleDictionary::EMPTY, 10000).apply(List.of(Exp, exp));
-        System.out.println(expectation);
         Assert.assertEquals(((Number)expectation).doubleValue(), 3.0, 1e-14);
     }
 

@@ -33,22 +33,22 @@ public class Rules<Op extends Operator> {
 
     public final List<Operations.Rule<Object, Object>> ALGEBRAIC_SIMPLIFICATION_RULES() {
             return List.of(
-                new Operations.Rule<>(List.of(prod, List.of("?", "x"), 1.0d), List.of(":", "x")),
-                new Operations.Rule<>(List.of(prod, 1.0d, List.of("?", "x")), List.of(":", "x")),
-                new Operations.Rule<>(List.of(prod, List.of("?", "x"), 0.0d), 0.0d),
-                new Operations.Rule<>(List.of(prod, 0.0d, List.of("?", "x")), 0.0d),
-                new Operations.Rule<>(List.of(sum, List.of("?", "x"), 0.0d), List.of(":", "x")),
-                new Operations.Rule<>(List.of(sum, 0.0d, List.of("?", "x")), List.of(":", "x")));
+                new Operations.Rule<>(prod.of(List.of("?", "x"), 1.0d), List.of(":", "x")),
+                new Operations.Rule<>(prod.of(1.0d, List.of("?", "x")), List.of(":", "x")),
+                new Operations.Rule<>(prod.of(List.of("?", "x"), 0.0d), 0.0d),
+                new Operations.Rule<>(prod.of(0.0d, List.of("?", "x")), 0.0d),
+                new Operations.Rule<>(sum.of(List.of("?", "x"), 0.0d), List.of(":", "x")),
+                new Operations.Rule<>(sum.of(0.0d, List.of("?", "x")), List.of(":", "x")));
     }
 
     public final List<Operations.Rule<Object, Object>> PRODUCT_ALGEBRAIC_SIMPLIFICATION() {
         return List.of(
                 new Operations.Rule<>( // c * (a+b) = c*a + c*b
-                        List.of(prod, List.of("?", "c"), List.of(sum, List.of("?", "a"), List.of("?", "b"))),
-                        List.of(sum, List.of(prod, List.of(":", "c"), List.of(":", "a")), List.of(prod, List.of(":", "c"), List.of(":", "b")))),
+                        prod.of(List.of("?", "c"), sum.of(List.of("?", "a"), List.of("?", "b"))),
+                        sum.of(prod.of(List.of(":", "c"), List.of(":", "a")), prod.of(List.of(":", "c"), List.of(":", "b")))),
                 new Operations.Rule<>( // (a+b) * c = a*c + b*c
-                        List.of(prod, List.of(sum, List.of("?", "a"), List.of("?", "b")), List.of("?", "c")),
-                        List.of(sum, List.of(prod, List.of(":", "a"), List.of(":", "c")), List.of(prod, List.of(":", "b"), List.of(":", "c"))))
+                        prod.of(sum.of(List.of("?", "a"), List.of("?", "b")), List.of("?", "c")),
+                        sum.of(prod.of(List.of(":", "a"), List.of(":", "c")), prod.of(List.of(":", "b"), List.of(":", "c"))))
         );
     }
 

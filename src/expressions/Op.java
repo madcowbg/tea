@@ -70,6 +70,12 @@ public enum Op implements Printable, Operation, Operator {
             assert args.length == 1;
             return Math.signum(args[0]);
         }
+
+        @Override
+        public int arity() {
+            return 1;
+        }
+
     },
     div {
         @Override
@@ -87,5 +93,11 @@ public enum Op implements Printable, Operation, Operator {
             assert args.length == 2;
             return args[0] / args[1];
         }
+    };
+
+    @Override
+    public int arity() {
+        return 2;
     }
+
 }
