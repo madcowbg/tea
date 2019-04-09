@@ -3,10 +3,10 @@ import matching.simple.SimpleAlgebra;
 import matching.simple.SimpleDictionary;
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import snippets.GaussianRules;
+import matching.simple.GaussianRules;
 import matching.simple.Op;
-import snippets.ProbabilisticRules;
-import snippets.Rules;
+import matching.simple.ProbabilisticRules;
+import matching.simple.Rules;
 
 import java.util.List;
 import java.util.stream.Collectors;

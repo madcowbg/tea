@@ -1,4 +1,4 @@
-package snippets;
+package matching.simple;
 
 import matching.Operations;
 import matching.Operator;

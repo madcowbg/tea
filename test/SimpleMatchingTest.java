@@ -5,9 +5,9 @@ import matching.Operations;
 import matching.simple.*;
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import snippets.GaussianRules;
-import snippets.ProbabilisticRules;
-import snippets.Rules;
+import matching.simple.GaussianRules;
+import matching.simple.ProbabilisticRules;
+import matching.simple.Rules;
 
 import java.util.List;
 import java.util.stream.Collectors;
