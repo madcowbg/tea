@@ -11,13 +11,17 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static matching.simple.SimpleAlgebra.Distribution.Normal;
-import static snippets.GaussianRules.GAUSSIAN_EXPECTATION_RULES;
-import static snippets.ProbabilisticRules.*;
-import static snippets.Rules.*;
 
 public class MainSimplifier {
     private static final SimpleAlgebra a = new SimpleAlgebra(Op.class);
     private static final Operations<Object, Object, Object, Object, Object, Object, Object> o = new Operations<>(a, a, a);
+
+    private static final SimpleAlgebra.Symbol Exp = new SimpleAlgebra.Symbol("Exp");
+    private static final SimpleAlgebra.Symbol Var = new SimpleAlgebra.Symbol("Var");
+
+    private static Rules<Op> rules = new Rules<>(Op.plus, Op.mul, Op.sign);
+    private static ProbabilisticRules<Op, SimpleAlgebra.Symbol> probabilisticRules = new ProbabilisticRules<>(rules, Exp, Var);
+    private static GaussianRules<Op, SimpleAlgebra.Symbol> gaussianRules = new GaussianRules<>(probabilisticRules);
 
     public static void main(String[] args) {
 //        trySimpleProb();
@@ -30,28 +34,25 @@ public class MainSimplifier {
         var exp = List.of(Op.plus, 3.0, List.of(Op.mul, List.of(Normal, x_1, 0.0, 1.0), 4));
         System.out.println(exp);
 
-        var Exp = new SimpleAlgebra.Symbol("Exp");
 
         var allExpectationRules = Stream.of(
-                ALGEBRAIC_SIMPLIFICATION_RULES,
-                DISTRIBUTION_SIMPLIFICATION_RULES,
-                EXPECTATION_RULES(Exp),
-                GAUSSIAN_EXPECTATION_RULES(Exp)).flatMap(List::stream).collect(Collectors.toList());
+                rules.ALGEBRAIC_SIMPLIFICATION_RULES(),
+                probabilisticRules.DISTRIBUTION_SIMPLIFICATION_RULES(),
+                probabilisticRules.EXPECTATION_RULES(),
+                gaussianRules.GAUSSIAN_EXPECTATION_RULES()).flatMap(List::stream).collect(Collectors.toList());
 
         var expectation = o.repeatedlyApplyRules(allExpectationRules, SimpleDictionary::EMPTY, 10000).apply(List.of(Exp, exp));
         System.out.println(expectation);
 
-        var Var = new SimpleAlgebra.Symbol("Var");
 
         var allVarianceRules = Stream.of(
-                ALGEBRAIC_SIMPLIFICATION_RULES,
-                PRODUCT_ALGEBRAIC_SIMPLIFICATION,
-                DISTRIBUTION_SIMPLIFICATION_RULES,
-                EXPECTATION_RULES(Exp),
-                VARIANCE_RULES(Exp, Var),
-                //GAUSSIAN_DISTRIBUTION_INCORPORATE_LINEAR_COMBINATION_RULES,
-                GAUSSIAN_EXPECTATION_RULES(Exp),
-                ALGEBRAIC_NUMBER_EVALUATION_RULES
+                rules.ALGEBRAIC_SIMPLIFICATION_RULES(),
+                rules.PRODUCT_ALGEBRAIC_SIMPLIFICATION(),
+                probabilisticRules.DISTRIBUTION_SIMPLIFICATION_RULES(),
+                probabilisticRules.EXPECTATION_RULES(),
+                probabilisticRules.VARIANCE_RULES(),
+                gaussianRules.GAUSSIAN_EXPECTATION_RULES(),
+                rules.ALGEBRAIC_NUMBER_EVALUATION_RULES()
                 ).flatMap(List::stream).collect(Collectors.toList());
 
         var variance = o.repeatedlyApplyRules(allVarianceRules, SimpleDictionary::EMPTY, 10000).apply(List.of(Var, exp));

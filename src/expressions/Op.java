@@ -1,6 +1,8 @@
 package expressions;
 
-public enum Op implements Printable, Operation {
+import matching.Operator;
+
+public enum Op implements Printable, Operation, Operator {
     plus {
         @Override
         public String print() {

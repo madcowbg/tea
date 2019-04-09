@@ -10,9 +10,9 @@ import java.util.stream.Collectors;
 
 public class SimpleAlgebra implements ExpressionSystem<Object, Object, Object>, PatternSystem<Object, Object, Object>, SkeletonSystem<Object, Object, Object, Object> {
 
-    private final Class<Operation> Op;
+    private final Class<? extends Operation> Op;
 
-    public SimpleAlgebra(Class Op) {
+    public SimpleAlgebra(Class<? extends Operation> Op) {
         this.Op = Op;
     }
 
@@ -243,9 +243,9 @@ public class SimpleAlgebra implements ExpressionSystem<Object, Object, Object>, 
     public Object evaluate(Object o) {
         if (isAtom(o)) {
             return o;
-        } else if (isCompositeExpression(o) && (((List) o).size() == 3 || ((List) o).size() == 2)) {
+        } else if (isCompositeExpression(o)) {
             var op = evaluate(((List) o).get(0));
-            var args = ((List<Object>) o).subList(1, ((List) o).size()).stream().map(this::evaluate).collect(Collectors.toList());
+            var args = ((List<Object>) o).stream().skip(1).map(this::evaluate).collect(Collectors.toList());
             if (Op.isInstance(op) && args.stream().allMatch(Number.class::isInstance)) {
                 return Op.cast(op).apply(args.stream().map(Number.class::cast).mapToDouble(Number::doubleValue).toArray());
             } else {

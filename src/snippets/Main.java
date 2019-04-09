@@ -1,6 +1,7 @@
 package snippets;
 
 import expressions.*;
+import expressions.Op;
 
 import java.util.function.Function;
 
@@ -21,11 +22,11 @@ public class Main {
 //        return (Term s) -> {
 //            Expr e = (Expr) s;
 //            switch (e.op) {
-//                case plus:
+//                case sum:
 //                    return eval(mapper).apply(e.a) + eval(mapper).apply(e.b);
 //                case minus:
 //                    return eval(mapper).apply(e.a) + eval(mapper).apply(e.b);
-//                case mul:
+//                case prod:
 //                    return eval(mapper).apply(e.a) * eval(mapper).apply(e.b);
 //                default:
 //                    throw new UnsupportedOperationException();
