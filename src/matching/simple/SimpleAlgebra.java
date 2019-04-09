@@ -1,13 +1,20 @@
 package matching.simple;
 
-import expressions.Op;
+import expressions.Operation;
 import matching.*;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class SimpleAlgebra implements ExpressionSystem<Object, Object, Object>, PatternSystem<Object, Object, Object>, SkeletonSystem<Object, Object, Object, Object> {
+
+    private final Class<Operation> Op;
+
+    public SimpleAlgebra(Class Op) {
+        this.Op = Op;
+    }
 
     public enum Distribution {
         Normal {
@@ -58,7 +65,7 @@ public class SimpleAlgebra implements ExpressionSystem<Object, Object, Object>, 
             return true;
         } else if (a instanceof Number && b instanceof Number) {
             return Math.abs(((Number) a).doubleValue() - ((Number) b).doubleValue()) < TOL;
-        } else if (a instanceof Op && b instanceof Op) {
+        } else if (Op.isInstance(a) && Op.isInstance(b)) {
             return Objects.equals(a, b);
         } else if (a instanceof Variable && b instanceof Variable ) {
             return Objects.equals(a, b);
@@ -77,7 +84,7 @@ public class SimpleAlgebra implements ExpressionSystem<Object, Object, Object>, 
             return List.of(a);
         } else if (b instanceof List) {
             var op = ((List) b).get(0);
-            if (op instanceof Distribution || op instanceof Op) {
+            if (op instanceof Distribution || Op.isInstance(op)) {
                 return List.of(a, b);
             } else {
                 var res = new LinkedList<Object>((List)b);
@@ -238,12 +245,11 @@ public class SimpleAlgebra implements ExpressionSystem<Object, Object, Object>, 
             return o;
         } else if (isCompositeExpression(o) && (((List) o).size() == 3 || ((List) o).size() == 2)) {
             var op = evaluate(((List) o).get(0));
-            var a = evaluate(((List) o).get(1));
-            var b = ((List) o).size() == 3 ? evaluate(((List) o).get(2)) : Double.NaN;
-            if (op instanceof Op && a instanceof Number && b instanceof Number) {
-                return ((Op) op).apply(((Number) a).doubleValue(), ((Number) b).doubleValue());
+            var args = ((List<Object>) o).subList(1, ((List) o).size()).stream().map(this::evaluate).collect(Collectors.toList());
+            if (Op.isInstance(op) && args.stream().allMatch(Number.class::isInstance)) {
+                return Op.cast(op).apply(args.stream().map(Number.class::cast).mapToDouble(Number::doubleValue).toArray());
             } else {
-                return cons(op, cons(a, b));
+                return cons(op, args);
             }
         } else {
             return o;

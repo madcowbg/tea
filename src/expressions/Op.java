@@ -13,8 +13,9 @@ public enum Op implements Printable, Operation {
         }
 
         @Override
-        public double apply(double a, double b) {
-            return a + b;
+        public double apply(double ...args) {
+            assert args.length == 2;
+            return args[0] + args[1];
         }
     },
     minus {
@@ -29,8 +30,9 @@ public enum Op implements Printable, Operation {
         }
 
         @Override
-        public double apply(double a, double b) {
-            return a - b;
+        public double apply(double ...args) {
+            assert args.length == 2;
+            return args[0] - args[1];
         }
     },
     mul {
@@ -45,8 +47,9 @@ public enum Op implements Printable, Operation {
         }
 
         @Override
-        public double apply(double a, double b) {
-            return a * b;
+        public double apply(double ...args) {
+            assert args.length == 2;
+            return args[0] * args[1];
         }
     },
     sign{
@@ -61,8 +64,9 @@ public enum Op implements Printable, Operation {
         }
 
         @Override
-        public double apply(double a, double b) {
-            return Math.signum(a);
+        public double apply(double ...args) {
+            assert args.length == 1;
+            return Math.signum(args[0]);
         }
     },
     div {
@@ -77,8 +81,9 @@ public enum Op implements Printable, Operation {
         }
 
         @Override
-        public double apply(double a, double b) {
-            return a / b;
+        public double apply(double ...args) {
+            assert args.length == 2;
+            return args[0] / args[1];
         }
     }
 }

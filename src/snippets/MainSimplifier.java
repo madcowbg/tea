@@ -16,7 +16,7 @@ import static snippets.ProbabilisticRules.*;
 import static snippets.Rules.*;
 
 public class MainSimplifier {
-    private static final SimpleAlgebra a = new SimpleAlgebra();
+    private static final SimpleAlgebra a = new SimpleAlgebra(Op.class);
     private static final Operations<Object, Object, Object, Object, Object, Object, Object> o = new Operations<>(a, a, a);
 
     public static void main(String[] args) {

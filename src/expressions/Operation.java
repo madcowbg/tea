@@ -1,5 +1,5 @@
 package expressions;
 
 public interface Operation {
-    double apply(double a, double b);
+    double apply(double ...args);
 }

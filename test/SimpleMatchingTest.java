@@ -18,7 +18,7 @@ import static snippets.Rules.*;
 
 @Test
 public class SimpleMatchingTest {
-    private final SimpleAlgebra a = new SimpleAlgebra();
+    private final SimpleAlgebra a = new SimpleAlgebra(Op.class);
     private final Operations<Object, Object, Object, Object, Object, Object, Object> o = new Operations<>(a, a, a);
 
 

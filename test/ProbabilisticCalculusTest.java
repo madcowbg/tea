@@ -16,7 +16,7 @@ import static snippets.Rules.*;
 
 @Test
 public class ProbabilisticCalculusTest {
-    private final SimpleAlgebra a = new SimpleAlgebra();
+    private final SimpleAlgebra a = new SimpleAlgebra(Op.class);
     private final Operations<Object, Object, Object, Object, Object, Object, Object> o = new Operations<>(a, a, a);
 
     private final SimpleAlgebra.Symbol Exp = new SimpleAlgebra.Symbol("Exp");
