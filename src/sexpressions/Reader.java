@@ -21,9 +21,9 @@ public class Reader<T> {
         this.tree = tree;
     }
 
-    public Maybe<Expressions.Expr> readSExp(String str) {
+    public Maybe<Expressions.Expr<T>> readSExp(String str) {
         char[] s = str.toCharArray();
-        Stack<List<Expressions.Expr>> partial = new Stack<>();
+        Stack<List<Expressions.Expr<T>>> partial = new Stack<>();
         partial.push(new LinkedList<>());
 
         int i = 0;
@@ -45,7 +45,7 @@ public class Reader<T> {
                 }
 
                 i++;
-                List<Expressions.Expr> children = partial.pop();
+                List<Expressions.Expr<T>> children = partial.pop();
                 partial.peek().add(tree.cons(children));
             } else {
                 int start = i;

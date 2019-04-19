@@ -5,7 +5,7 @@ import java.util.stream.Collectors;
 
 class DefaultExpressions implements Expressions<String> {
     @Override
-    public Expr cons(List<Expr> children) {
+    public Expr cons(List<Expr<String>> children) {
         return new CompExp(children);
     }
 
@@ -19,7 +19,7 @@ class DefaultExpressions implements Expressions<String> {
         return data;
     }
 
-    private class Atom implements Expr {
+    private class Atom implements Expr<String> {
         final String data;
 
         Atom(String data) {
@@ -28,20 +28,40 @@ class DefaultExpressions implements Expressions<String> {
 
         @Override
         public String toString() {
-            return data.toString();
+            return data;
+        }
+
+        @Override
+        public List<Expr<String>> children() {
+            return null;
+        }
+
+        @Override
+        public String data() {
+            return data;
         }
     }
 
-    private class CompExp implements Expr {
-        final List<Expr> children;
+    private class CompExp implements Expr<String> {
+        final List<Expr<String>> children;
 
-        CompExp(List<Expr> children) {
+        CompExp(List<Expr<String>> children) {
             this.children = children;
         }
 
         @Override
         public String toString() {
             return "(" + children.stream().map(Object::toString).collect(Collectors.joining(" ")) + ")";
+        }
+
+        @Override
+        public List<Expr<String>> children() {
+            return children;
+        }
+
+        @Override
+        public String data() {
+            return null;
         }
     }
 }

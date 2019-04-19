@@ -10,6 +10,7 @@ public class MainTokenize {
         runTest("(+ ((? x) 7.0))(");
         runTest("(+ ((? x) 7.0)))");
         runTest(")(+ ((? x) 7.0))");
+        runTest("(+ a N (- 2 (? x) 7.0))");
     }
 
     private static void runTest(String str) {

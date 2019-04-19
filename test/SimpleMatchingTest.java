@@ -6,8 +6,6 @@ import matching.simple.*;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import matching.simple.GaussianRules;
-import matching.simple.ProbabilisticRules;
-import matching.simple.Rules;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,14 +18,12 @@ public class SimpleMatchingTest {
     private final SimpleAlgebra a = new SimpleAlgebra(Op.class);
     private final Operations<Object, Object, Object, Object, Object, Object, Object> o = new Operations<>(a, a, a);
 
-    private final Rules<Op> rules = new Rules<>(Op.plus, Op.mul, Op.sign);
-    private final ProbabilisticRules<Op, SimpleAlgebra.Symbol> probabilisticRules = new ProbabilisticRules<>(rules, null, null);
-    private final GaussianRules<Op, SimpleAlgebra.Symbol> gaussianRules = new GaussianRules<>(probabilisticRules);
+    private final GaussianRules<Op, SimpleAlgebra.Symbol> rules = new GaussianRules<>(Op.values(), null, null);
 
     private final List<Operations.Rule<Object, Object>> PROBABILISTIC_NORMAL_SIMPLIFIER_RULES = Stream.of(
             rules.ALGEBRAIC_SIMPLIFICATION_RULES(),
-            probabilisticRules.DISTRIBUTION_SIMPLIFICATION_RULES(),
-            gaussianRules.GAUSSIAN_DISTRIBUTION_INCORPORATE_LINEAR_COMBINATION_RULES(),
+            rules.DISTRIBUTION_SIMPLIFICATION_RULES(),
+            rules.GAUSSIAN_DISTRIBUTION_INCORPORATE_LINEAR_COMBINATION_RULES(),
             rules.ALGEBRAIC_NUMBER_EVALUATION_RULES()).flatMap(List::stream).collect(Collectors.toList());
 
     @Test

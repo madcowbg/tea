@@ -1,14 +1,13 @@
 package snippets;
 
-import expressions.Op;
-import functional.Maybe;
 import matching.*;
 import matching.simple.*;
+import sexpressions.Reader;
 
-import java.util.Collection;
+import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static matching.simple.SimpleAlgebra.Distribution.Normal;
 
@@ -19,16 +18,32 @@ public class MainSimplifier {
     private static final SimpleAlgebra.Symbol Exp = new SimpleAlgebra.Symbol("Exp");
     private static final SimpleAlgebra.Symbol Var = new SimpleAlgebra.Symbol("Var");
 
-    private static Rules<Op> rules = new Rules<>(Op.plus, Op.mul, Op.sign);
-    private static ProbabilisticRules<Op, SimpleAlgebra.Symbol> probabilisticRules = new ProbabilisticRules<>(rules, Exp, Var);
-    private static GaussianRules<Op, SimpleAlgebra.Symbol> gaussianRules = new GaussianRules<>(probabilisticRules);
+    private static Rules<Op> rules = new Rules<>(Op.values());
+    private static ProbabilisticRules<Op, SimpleAlgebra.Symbol> probabilisticRules = new ProbabilisticRules<>(Op.values(), Exp, Var);
+    private static GaussianRules<Op, SimpleAlgebra.Symbol> gaussianRules = new GaussianRules<>(Op.values(), Exp, Var);
 
     public static void main(String[] args) {
 //        trySimpleProb();
 //        tryComplexProb();
-        tryExpectations();
+//        tryExpectations();
+        loadData();
     }
 
+    private static void loadData() {
+
+        var exp = Reader.STRING.readSExp("(+ 2 (* 3.0 (N x_1 1 1)))");
+        System.out.println(exp);
+
+        Function<String, Op> ops = Arrays.stream(Op.values()).collect(Collectors.toMap(Op::toString, Function.identity()))::get;
+        Function<String, SimpleAlgebra.Distribution> dists = (dname) -> dname.equals("N") ? Normal : null;
+        Function<String, SimpleAlgebra.Symbol> symbols = SimpleAlgebra.Symbol::new;
+
+        var pat = RulesReader.convertExpression(RulesReader.convertToken(List.of(ops, dists, symbols))).apply(exp.orElseThrow(RuntimeException::new));
+
+        System.out.println(pat);
+    }
+
+    /*
     private static void tryExpectations() {
         var x_1 = new SimpleAlgebra.Symbol("x_1");
         var exp = List.of(Op.plus, 3.0, List.of(Op.mul, List.of(Normal, x_1, 0.0, 1.0), 4));
@@ -145,6 +160,6 @@ public class MainSimplifier {
 
         var instantiated = dict.map(d -> o.instantiate(d, s));
         System.out.println(instantiated);
-    }
+    }*/
 
 }
